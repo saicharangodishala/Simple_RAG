@@ -125,26 +125,24 @@ def chunk_text(text: str) -> List[str]:
     return chunks
 
 def get_embedding(text: str) -> List[float]:
-    """Generate embedding using Gemini API"""
     try:
         response = client.models.embed_content(
-            model="models/embedding-001",
-            contents=text
+            model="embedding-001",
+            contents=[text]
         )
-        return response.embedding
+        return response.embeddings[0].values
     except Exception as e:
         print(f"Error generating embedding: {e}")
         raise
 
 
 def get_query_embedding(text: str) -> List[float]:
-    """Generate embedding for query using Gemini API"""
     try:
         response = client.models.embed_content(
-            model="models/embedding-001",
-            contents=text
+            model="embedding-001",
+            contents=[text]
         )
-        return response.embedding
+        return response.embeddings[0].values
     except Exception as e:
         print(f"Error generating query embedding: {e}")
         raise
