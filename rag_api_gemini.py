@@ -14,7 +14,6 @@ from PyPDF2 import PdfReader
 import docx
 import io
 from dotenv import load_dotenv
-from sentence_transformers import SentenceTransformer
 
 # Load environment variables from .env file
 load_dotenv()
@@ -28,7 +27,7 @@ app = FastAPI(
 # Configuration
 PINECONE_API_KEY = os.getenv("PINECONE_API_KEY")
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
-INDEX_NAME = "gemini-rag"
+INDEX_NAME = "gemini-rag-v2"
 CHUNK_SIZE = 1000
 CHUNK_OVERLAP = 200
 
@@ -46,8 +45,6 @@ pc = Pinecone(api_key=PINECONE_API_KEY)
 # Initialize Gemini client
 client = genai.Client(api_key=GEMINI_API_KEY)
 
-# Initialize embedding model
-embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
 
 # Create or connect to index
 def setup_index():
@@ -63,7 +60,7 @@ def setup_index():
         print(f"Creating new index: {INDEX_NAME}")
         pc.create_index(
             name=INDEX_NAME,
-            dimension=384,  # all-MiniLM-L6-v2 dimension
+            dimension=768,  # all-MiniLM-L6-v2 dimension
             metric='cosine',
             spec=ServerlessSpec(cloud='aws', region='us-east-1')
         )
@@ -128,22 +125,30 @@ def chunk_text(text: str) -> List[str]:
     return chunks
 
 def get_embedding(text: str) -> List[float]:
-    """Generate embedding using Sentence Transformers"""
+    """Generate embedding using Gemini API"""
     try:
-        embedding = embedding_model.encode(text)
-        return embedding.tolist()
+        response = client.models.embed_content(
+            model="models/embedding-001",
+            content=text
+        )
+        return response.embedding
     except Exception as e:
         print(f"Error generating embedding: {e}")
         raise
 
+
 def get_query_embedding(text: str) -> List[float]:
-    """Generate embedding for query using Sentence Transformers"""
+    """Generate embedding for query using Gemini API"""
     try:
-        embedding = embedding_model.encode(text)
-        return embedding.tolist()
+        response = client.models.embed_content(
+            model="models/embedding-001",
+            content=text
+        )
+        return response.embedding
     except Exception as e:
         print(f"Error generating query embedding: {e}")
         raise
+
 # API Endpoints
 @app.get("/")
 def read_root():
