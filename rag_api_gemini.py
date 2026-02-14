@@ -165,6 +165,11 @@ def read_root():
         }
     }
 
+@app.get("/models")
+def list_models():
+    models = client.models.list()
+    return [m.name for m in models]
+
 @app.get("/health")
 def health_check():
     """Health check endpoint"""
