@@ -27,7 +27,7 @@ app = FastAPI(
 # Configuration
 PINECONE_API_KEY = os.getenv("PINECONE_API_KEY")
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
-INDEX_NAME = "gemini-rag-v2"
+INDEX_NAME = "gemini-rag-v3"
 CHUNK_SIZE = 1000
 CHUNK_OVERLAP = 200
 
@@ -63,7 +63,7 @@ def setup_index():
         print(f"Creating new index: {INDEX_NAME}")
         pc.create_index(
             name=INDEX_NAME,
-            dimension=1536,  # all-MiniLM-L6-v2 dimension
+            dimension=1024,  # all-MiniLM-L6-v2 dimension
             metric='cosine',
             spec=ServerlessSpec(cloud='aws', region='us-east-1')
         )
@@ -131,9 +131,10 @@ def get_embedding(text: str) -> List[float]:
     try:
         response = pc.inference.embed(
             model="multilingual-e5-large",
-            inputs=[text]
+            inputs=[text],
+            parameters={"input_type": "passage"}
         )
-        return response[0]['values']
+        return response[0]["values"]
     except Exception as e:
         print(f"Error generating embedding: {e}")
         raise
@@ -143,9 +144,10 @@ def get_query_embedding(text: str) -> List[float]:
     try:
         response = pc.inference.embed(
             model="multilingual-e5-large",
-            inputs=[text]
+            inputs=[text],
+            parameters={"input_type": "query"}
         )
-        return response[0]['values']
+        return response[0]["values"]
     except Exception as e:
         print(f"Error generating query embedding: {e}")
         raise
