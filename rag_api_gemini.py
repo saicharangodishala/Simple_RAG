@@ -129,7 +129,7 @@ def get_embedding(text: str) -> List[float]:
     try:
         response = client.models.embed_content(
             model="models/embedding-001",
-            content=text
+            contents=text
         )
         return response.embedding
     except Exception as e:
@@ -142,7 +142,7 @@ def get_query_embedding(text: str) -> List[float]:
     try:
         response = client.models.embed_content(
             model="models/embedding-001",
-            content=text
+            contents=text
         )
         return response.embedding
     except Exception as e:
