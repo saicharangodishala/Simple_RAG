@@ -43,7 +43,10 @@ print(f"Gemini API Key loaded: {GEMINI_API_KEY[:10]}...")
 pc = Pinecone(api_key=PINECONE_API_KEY)
 
 # Initialize Gemini client
-client = genai.Client(api_key=GEMINI_API_KEY)
+client = genai.Client(
+    api_key=GEMINI_API_KEY,
+    http_options={"api_version": "v1"}
+)
 
 
 # Create or connect to index
@@ -146,8 +149,6 @@ def get_query_embedding(text: str) -> List[float]:
     except Exception as e:
         print(f"Error generating query embedding: {e}")
         raise
-
-
 
 # API Endpoints
 @app.get("/")
