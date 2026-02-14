@@ -27,7 +27,7 @@ app = FastAPI(
 # Configuration
 PINECONE_API_KEY = os.getenv("PINECONE_API_KEY")
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
-INDEX_NAME = "gemini-rag-v2"
+INDEX_NAME = "gemini-rag-v3"
 CHUNK_SIZE = 1000
 CHUNK_OVERLAP = 200
 
@@ -127,8 +127,8 @@ def chunk_text(text: str) -> List[str]:
 def get_embedding(text: str) -> List[float]:
     try:
         response = client.models.embed_content(
-            model="text-embedding-004",
-            contents=[text]
+            model="models/embedding-001",
+            contents=[types.Content(parts=[types.Part(text=text)])]
         )
         return response.embeddings[0].values
     except Exception as e:
@@ -139,8 +139,8 @@ def get_embedding(text: str) -> List[float]:
 def get_query_embedding(text: str) -> List[float]:
     try:
         response = client.models.embed_content(
-            model="text-embedding-004",
-            contents=[text]
+            model="models/embedding-001",
+            contents=[types.Content(parts=[types.Part(text=text)])]
         )
         return response.embeddings[0].values
     except Exception as e:
