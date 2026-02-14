@@ -127,7 +127,7 @@ def chunk_text(text: str) -> List[str]:
 def get_embedding(text: str) -> List[float]:
     try:
         response = client.models.embed_content(
-            model="embedding-001",
+            model="text-embedding-004",
             contents=[text]
         )
         return response.embeddings[0].values
@@ -139,13 +139,14 @@ def get_embedding(text: str) -> List[float]:
 def get_query_embedding(text: str) -> List[float]:
     try:
         response = client.models.embed_content(
-            model="embedding-001",
+            model="text-embedding-004",
             contents=[text]
         )
         return response.embeddings[0].values
     except Exception as e:
         print(f"Error generating query embedding: {e}")
         raise
+
 
 # API Endpoints
 @app.get("/")
